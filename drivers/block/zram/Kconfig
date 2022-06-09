@@ -42,3 +42,12 @@ config ZRAM_MEMORY_TRACKING
 config ZRAM_DEFAULT_COMP_ALGORITHM
 	string "Default ZRAM algorithm"
 	default "lzo"
+	
+#ifdef VENDOR_EDIT
+config OPPO_ZRAM_OPT
+	bool "oppo zram  optimization"
+	depends on ZRAM
+	default y
+	help
+	oppo zram optimization
+#endif /*VENDOR_EDIT*/
