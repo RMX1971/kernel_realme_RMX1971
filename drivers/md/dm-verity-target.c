@@ -79,6 +79,15 @@ static inline bool verity_is_system_shutting_down(void)
 }
 
 /*
+ * While system shutdown, skip verity work for I/O error.
+ */
+static inline bool verity_is_system_shutting_down(void)
+{
+	return system_state == SYSTEM_HALT || system_state == SYSTEM_POWER_OFF
+	|| system_state == SYSTEM_RESTART;
+}
+
+/*
  * Initialize struct buffer_aux for a freshly created buffer.
  */
 static void dm_bufio_alloc_callback(struct dm_buffer *buf)
@@ -253,7 +262,12 @@ out:
 #ifdef CONFIG_DM_VERITY_AVB
 		dm_verity_avb_error_handler();
 #endif
+
+#ifdef OPLUS_BUG_STABILITY
+		panic("dm-verity device corrupted");
+#else
 		kernel_restart("dm-verity device corrupted");
+#endif /* OPLUS_BUG_STABILITY */
 	}
 
 	if (v->mode == DM_VERITY_MODE_EIO) {
